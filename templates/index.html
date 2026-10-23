@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#030712">
+  <meta name="description" content="AI-powered spatial energy insights and electricity bill optimization.">
+  <title>EcoWatt Vision — Spatial Energy Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ["Space Grotesk", "sans-serif"] },
+          colors: { ink: "#030712", mint: "#10b981", aqua: "#06b6d4" }
+        }
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: #030712;
+      color: #e5e7eb;
+      background-image: radial-gradient(ellipse at 13% 0%, rgba(16,185,129,.12), transparent 34%),
+        radial-gradient(ellipse at 90% 19%, rgba(6,182,212,.09), transparent 30%);
+    }
+    .glass {
+      background: linear-gradient(145deg, rgba(15,23,42,.78), rgba(7,13,27,.79));
+      border: 1px solid rgba(148,163,184,.14);
+      box-shadow: 0 18px 55px rgba(0,0,0,.2), inset 0 1px rgba(255,255,255,.025);
+      backdrop-filter: blur(16px);
+    }
+    .glass:hover { border-color: rgba(16,185,129,.29); }
+    .metric-glow { box-shadow: inset 0 1px rgba(255,255,255,.035), 0 0 30px rgba(16,185,129,.045); }
+    .scan-line {
+      position: absolute; left: 0; right: 0; height: 2px; z-index: 2;
+      background: #34d399; box-shadow: 0 0 10px 3px rgba(16,185,129,.76), 0 0 32px 7px rgba(16,185,129,.32);
+      animation: scan 2.4s ease-in-out infinite;
+    }
+    .scan-line::after {
+      content: ""; position: absolute; height: 44px; left: 0; right: 0; bottom: 1px;
+      background: linear-gradient(transparent, rgba(16,185,129,.12));
+    }
+    @keyframes scan { 0%,100% { top: 8%; } 50% { top: 91%; } }
+    .spin { animation: spin 1.4s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    input[type="range"] { accent-color: #10b981; }
+    .status-critical { color:#fca5a5; background:rgba(239,68,68,.1); border-color:rgba(248,113,113,.23); }
+    .status-moderate { color:#fcd34d; background:rgba(245,158,11,.1); border-color:rgba(251,191,36,.23); }
+    .status-optimal { color:#6ee7b7; background:rgba(16,185,129,.1); border-color:rgba(52,211,153,.23); }
+    .drop-active { border-color:rgba(16,185,129,.8)!important; background:rgba(16,185,129,.06)!important; }
+    canvas { max-width:100%; }
+    @media (prefers-reduced-motion: reduce) {
+      *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; scroll-behavior:auto!important; }
+    }
+  </style>
+</head>
+<body class="font-sans antialiased">
+  <div class="mx-auto max-w-[1440px] px-4 pb-12 sm:px-6 lg:px-10">
+    <header class="flex items-center justify-between border-b border-white/[.07] py-5">
+      <a href="/" class="flex items-center gap-3" aria-label="EcoWatt Vision home">
+        <span class="grid h-10 w-10 place-items-center rounded-xl border border-emerald-400/25 bg-emerald-400/[.09] text-emerald-300 shadow-[0_0_24px_rgba(16,185,129,.14)]">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13.2 2.8 5 13h6l-.3 8.2L19 11h-6l.2-8.2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        </span>
+        <span><span class="block text-sm font-bold tracking-wide text-white">ECOWATT <span class="text-emerald-400">VISION</span></span><span class="text-[10px] tracking-[.2em] text-slate-500">SPATIAL ENERGY INTELLIGENCE</span></span>
+      </a>
+      <div class="hidden items-center gap-2 rounded-full border border-emerald-400/15 bg-emerald-400/[.05] px-3 py-1.5 text-xs text-emerald-300 sm:flex">
+        <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400"></span> AI ENERGY AUDIT
+      </div>
+    </header>
+
+    <main>
+      <section class="grid gap-8 py-10 lg:grid-cols-[1.05fr_.95fr] lg:items-center lg:py-14">
+        <div>
+          <div class="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[.2em] text-emerald-400"><span class="h-px w-7 bg-emerald-400"></span>See your space differently</div>
+          <h1 class="max-w-2xl text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-[3.6rem]">Your room is using more power than you think<span class="text-emerald-400">.</span></h1>
+          <p class="mt-5 max-w-xl text-base leading-7 text-slate-400">Turn one photo into a smarter energy plan. Detect appliances, estimate your bill, and find practical ways to save — all in one scan.</p>
+          <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-500"><span class="flex items-center gap-2"><span class="text-emerald-400">✦</span> Vision-powered audit</span><span class="flex items-center gap-2"><span class="text-cyan-400">↗</span> PKR bill estimates</span><span class="flex items-center gap-2"><span class="text-emerald-400">⌁</span> No chat, just insights</span></div>
+        </div>
+        <div id="drop-zone" class="glass group relative overflow-hidden rounded-2xl border-dashed p-3 transition sm:p-4">
+          <div id="preview-shell" class="relative grid min-h-[260px] place-items-center overflow-hidden rounded-xl bg-slate-950/80 sm:min-h-[300px]">
+            <div id="empty-preview" class="px-5 py-8 text-center">
+              <div class="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl border border-emerald-400/20 bg-emerald-400/[.06] text-emerald-300">
+                <svg width="25" height="25" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="9" r="1.5" stroke="currentColor" stroke-width="1.5"/><path d="m4 17 5-5 3 3 3-4 5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <p class="font-medium text-slate-200">Drop your room photo here</p>
+              <p class="mt-1 text-xs text-slate-500">JPEG, PNG, or WebP · up to 10 MB</p>
+              <button id="choose-button" type="button" class="mt-5 rounded-lg border border-emerald-400/30 bg-emerald-400/[.08] px-4 py-2 text-sm font-semibold text-emerald-300 transition hover:bg-emerald-400/[.15]">Choose an image</button>
+            </div>
+            <img id="image-preview" class="hidden max-h-[390px] w-full object-contain" alt="Selected room photo">
+            <div id="scan-line" class="scan-line hidden" aria-hidden="true"></div>
+            <div id="scan-overlay" class="absolute inset-0 hidden items-center justify-center bg-slate-950/35">
+              <span class="rounded-full border border-emerald-300/20 bg-slate-950/80 px-4 py-2 text-xs font-medium text-emerald-200 shadow-lg">Mapping your energy footprint…</span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-3 px-1 pb-1 pt-3">
+            <p id="file-name" class="truncate text-xs text-slate-500">A clear, well-lit room photo works best</p>
+            <button id="analyze-button" type="button" disabled class="shrink-0 rounded-lg bg-emerald-400 px-4 py-2.5 text-sm font-bold text-slate-950 shadow-[0_0_22px_rgba(16,185,129,.2)] transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-40">
+              <span id="button-label">Analyze room <span aria-hidden="true">→</span></span>
+            </button>
+          </div>
+          <input id="image-input" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" aria-label="Choose a room photo">
+        </div>
+      </section>
+
+      <div id="alert" class="mb-5 hidden rounded-xl border px-4 py-3 text-sm" role="status" aria-live="polite"></div>
+
+      <section aria-label="Energy overview">
+        <div class="mb-4 flex items-end justify-between">
+          <div><p class="text-[10px] font-semibold uppercase tracking-[.2em] text-slate-500">Room energy overview</p><h2 class="mt-1 text-xl font-semibold text-white">Your energy snapshot</h2></div>
+          <span id="analysis-source" class="rounded-full border border-slate-700 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-slate-500">Awaiting scan</span>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-3">
+          <article class="glass metric-glow rounded-xl p-5 transition">
+            <div class="flex items-start justify-between"><div class="grid h-9 w-9 place-items-center rounded-lg bg-emerald-400/10 text-emerald-300"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 7h8M8 11h2m4 0h2m-8 4h2m4 0h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><span class="text-[10px] uppercase tracking-wider text-slate-500">Live detection</span></div>
+            <p id="appliance-count" class="mt-5 text-3xl font-semibold text-white">—</p><p class="mt-1 text-xs text-slate-400">Appliances detected</p>
+          </article>
+          <article class="glass metric-glow rounded-xl p-5 transition">
+            <div class="flex items-start justify-between"><div class="grid h-9 w-9 place-items-center rounded-lg bg-cyan-400/10 text-cyan-300"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2 5 13h6l-1 9 9-12h-6l1-8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div><span class="text-[10px] uppercase tracking-wider text-slate-500">Monthly estimate</span></div>
+            <p class="mt-5 text-3xl font-semibold text-white"><span id="consumption">—</span><span class="ml-1 text-sm font-medium text-slate-500">kWh</span></p><p class="mt-1 text-xs text-slate-400">Estimated consumption</p>
+          </article>
+          <article class="glass metric-glow rounded-xl p-5 transition">
+            <div class="flex items-start justify-between"><div class="grid h-9 w-9 place-items-center rounded-lg bg-amber-400/10 text-amber-300"><span class="text-lg font-semibold">₨</span></div><span class="text-[10px] uppercase tracking-wider text-slate-500">At ₨55 / kWh</span></div>
+            <p class="mt-5 text-3xl font-semibold text-white"><span class="text-base text-slate-400">₨</span><span id="monthly-bill">—</span></p><p class="mt-1 text-xs text-slate-400">Projected monthly bill</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="mt-5 grid gap-4 lg:grid-cols-[.8fr_1.2fr]" aria-label="Charts">
+        <article class="glass rounded-xl p-5 sm:p-6">
+          <div class="flex items-start justify-between"><div><p class="text-[10px] uppercase tracking-[.18em] text-slate-500">Efficiency index</p><h2 class="mt-1 text-base font-semibold text-white">Room efficiency rating</h2></div><span class="rounded-md border border-slate-700/80 px-2 py-1 text-[10px] text-slate-400">0 — 100</span></div>
+          <div class="relative mx-auto mt-2 h-[190px] max-w-[320px]"><canvas id="gauge-chart" role="img" aria-label="Room efficiency gauge"></canvas><div class="pointer-events-none absolute inset-x-0 top-[56%] text-center"><span id="efficiency-score" class="text-4xl font-semibold text-white">—</span><span class="ml-1 text-sm text-slate-500">/ 100</span><p id="efficiency-caption" class="mt-1 text-[10px] uppercase tracking-[.17em] text-slate-500">Awaiting scan</p></div></div>
+        </article>
+        <article class="glass rounded-xl p-5 sm:p-6">
+          <div class="flex items-start justify-between"><div><p class="text-[10px] uppercase tracking-[.18em] text-slate-500">Load breakdown</p><h2 class="mt-1 text-base font-semibold text-white">Monthly use by appliance</h2></div><span class="text-xs text-slate-500">kWh / month</span></div>
+          <div class="mt-5 h-[190px]"><canvas id="appliance-chart" role="img" aria-label="Monthly energy use by appliance"></canvas></div>
+        </article>
+      </section>
+
+      <section class="glass mt-5 rounded-xl p-5 sm:p-6" aria-labelledby="simulator-title">
+        <div class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+          <div class="max-w-lg"><div class="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.18em] text-cyan-300"><span>↘</span> What-if simulator</div><h2 id="simulator-title" class="mt-2 text-lg font-semibold text-white">Small changes. Real savings.</h2><p class="mt-1 text-sm leading-6 text-slate-400">Estimate the impact of trimming daily runtime across your heavy appliances.</p></div>
+          <div class="w-full md:max-w-md">
+            <div class="mb-3 flex items-center justify-between text-xs"><label for="savings-slider" class="text-slate-400">Daily runtime reduction</label><span class="rounded-md border border-cyan-400/20 bg-cyan-400/[.06] px-2 py-1 font-semibold text-cyan-300">−<span id="hours-value">1</span> hr / day</span></div>
+            <input id="savings-slider" type="range" min="1" max="6" step="1" value="1" class="w-full cursor-pointer">
+            <div class="mt-1 flex justify-between text-[10px] text-slate-600"><span>−1 hour</span><span>−6 hours</span></div>
+          </div>
+        </div>
+        <div class="mt-6 grid gap-3 sm:grid-cols-3">
+          <div class="rounded-lg border border-white/[.06] bg-slate-950/40 p-4"><p class="text-[10px] uppercase tracking-wider text-slate-500">Optimized monthly bill</p><p class="mt-2 text-xl font-semibold text-white">₨ <span id="sim-bill">—</span></p></div>
+          <div class="rounded-lg border border-emerald-400/10 bg-emerald-400/[.035] p-4"><p class="text-[10px] uppercase tracking-wider text-slate-500">Monthly savings</p><p class="mt-2 text-xl font-semibold text-emerald-300">₨ <span id="sim-monthly-saving">—</span></p></div>
+          <div class="rounded-lg border border-cyan-400/10 bg-cyan-400/[.035] p-4"><p class="text-[10px] uppercase tracking-wider text-slate-500">Potential annual savings</p><p class="mt-2 text-xl font-semibold text-cyan-300">₨ <span id="sim-annual-saving">—</span></p></div>
+        </div>
+      </section>
+
+      <section class="mt-8" aria-labelledby="directives-title">
+        <div class="mb-4 flex items-end justify-between"><div><p class="text-[10px] font-semibold uppercase tracking-[.2em] text-slate-500">Personalized action plan</p><h2 id="directives-title" class="mt-1 text-xl font-semibold text-white">AI optimization directives</h2></div><span id="directive-count" class="text-xs text-slate-500">No directives yet</span></div>
+        <div id="directives-grid" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div class="glass rounded-xl border-dashed p-6 text-center text-sm text-slate-500 sm:col-span-2 xl:col-span-3">Upload a room photo to reveal tailored energy-saving actions.</div>
+        </div>
+      </section>
+    </main>
+    <footer class="mt-12 flex flex-col justify-between gap-2 border-t border-white/[.06] pt-5 text-[11px] text-slate-600 sm:flex-row"><span>ECOWATT VISION <span class="text-slate-700">·</span> Smarter spaces, lighter footprints.</span><span>Estimates are indicative; actual usage and utility tariffs may vary.</span></footer>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById("image-input");
+    const dropZone = document.getElementById("drop-zone");
+    const chooseButton = document.getElementById("choose-button");
+    const analyzeButton = document.getElementById("analyze-button");
+    const imagePreview = document.getElementById("image-preview");
+    const emptyPreview = document.getElementById("empty-preview");
+    const alertBox = document.getElementById("alert");
+    const slider = document.getElementById("savings-slider");
+    let selectedFile = null;
+    let currentAnalysis = null;
+    let imageUrl = null;
+
+    const money = value => Math.round(value).toLocaleString("en-PK");
+
+    const gaugeChart = new Chart(document.getElementById("gauge-chart"), {
+      type: "doughnut",
+      data: {
+        datasets: [{ data: [0, 100], backgroundColor: ["#10b981", "rgba(148,163,184,.12)"], borderWidth: 0, hoverOffset: 0 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, rotation: -90, circumference: 180, cutout: "78%",
+        plugins: { legend: { display: false }, tooltip: { enabled: false } }
+      }
+    });
+
+    const applianceChart = new Chart(document.getElementById("appliance-chart"), {
+      type: "bar",
+      data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderRadius: 5, borderSkipped: false, barThickness: 18 }] },
+      options: {
+        indexAxis: "y", responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: context => ` ${context.raw} kWh / month` } } },
+        scales: {
+          x: { beginAtZero: true, grid: { color: "rgba(148,163,184,.08)" }, ticks: { color: "#64748b", font: { family: "Space Grotesk", size: 10 } }, border: { display: false } },
+          y: { grid: { display: false }, ticks: { color: "#94a3b8", font: { family: "Space Grotesk", size: 10 } }, border: { display: false } }
+        }
+      }
+    });
+
+    function showAlert(message, isError = false) {
+      alertBox.textContent = message;
+      alertBox.className = `mb-5 rounded-xl border px-4 py-3 text-sm ${isError ? "border-rose-400/20 bg-rose-400/[.06] text-rose-200" : "border-amber-400/20 bg-amber-400/[.06] text-amber-200"}`;
+      alertBox.classList.remove("hidden");
+    }
+
+    function clearAlert() {
+      alertBox.classList.add("hidden");
+      alertBox.textContent = "";
+    }
+
+    function selectFile(file) {
+      clearAlert();
+      if (!file) return;
+      const accepted = ["image/jpeg", "image/png", "image/webp"];
+      if (!accepted.includes(file.type)) {
+        showAlert("Please choose a JPEG, PNG, or WebP image.", true);
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        showAlert("This image is over the 10 MB upload limit.", true);
+        return;
+      }
+      selectedFile = file;
+      if (imageUrl) URL.revokeObjectURL(imageUrl);
+      imageUrl = URL.createObjectURL(file);
+      imagePreview.src = imageUrl;
+      imagePreview.classList.remove("hidden");
+      emptyPreview.classList.add("hidden");
+      document.getElementById("file-name").textContent = file.name;
+      analyzeButton.disabled = false;
+    }
+
+    chooseButton.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", event => selectFile(event.target.files[0]));
+    dropZone.addEventListener("dragover", event => { event.preventDefault(); dropZone.classList.add("drop-active"); });
+    dropZone.addEventListener("dragleave", event => {
+      if (!dropZone.contains(event.relatedTarget)) dropZone.classList.remove("drop-active");
+    });
+    dropZone.addEventListener("drop", event => {
+      event.preventDefault();
+      dropZone.classList.remove("drop-active");
+      selectFile(event.dataTransfer.files[0]);
+    });
+
+    function renderDirectives(directives) {
+      const grid = document.getElementById("directives-grid");
+      grid.replaceChildren();
+      document.getElementById("directive-count").textContent = `${directives.length} ${directives.length === 1 ? "action" : "actions"}`;
+      if (!directives.length) {
+        const empty = document.createElement("div");
+        empty.className = "glass rounded-xl border-dashed p-6 text-center text-sm text-slate-500 sm:col-span-2 xl:col-span-3";
+        empty.textContent = "No optimization directives were returned for this room.";
+        grid.append(empty);
+        return;
+      }
+      const styles = { Critical: "status-critical", Moderate: "status-moderate", Optimal: "status-optimal" };
+      directives.forEach(directive => {
+        const card = document.createElement("article");
+        card.className = "glass rounded-xl p-5 transition";
+        const top = document.createElement("div");
+        top.className = "flex items-start justify-between gap-2";
+        const name = document.createElement("h3");
+        name.className = "font-semibold text-white";
+        name.textContent = directive.appliance;
+        const badge = document.createElement("span");
+        badge.className = `shrink-0 rounded-full border px-2 py-1 text-[10px] font-semibold ${styles[directive.priority] || styles.Moderate}`;
+        badge.textContent = directive.priority;
+        top.append(name, badge);
+        const action = document.createElement("p");
+        action.className = "mt-3 text-sm leading-6 text-slate-400";
+        action.textContent = directive.action;
+        card.append(top, action);
+        grid.append(card);
+      });
+    }
+
+    function updateSimulator() {
+      const hours = Number(slider.value);
+      document.getElementById("hours-value").textContent = hours;
+      if (!currentAnalysis) {
+        document.getElementById("sim-bill").textContent = "—";
+        document.getElementById("sim-monthly-saving").textContent = "—";
+        document.getElementById("sim-annual-saving").textContent = "—";
+        return;
+      }
+      const heavyPower = currentAnalysis.appliances
+        .filter(appliance => appliance.is_heavy)
+        .reduce((sum, appliance) => sum + appliance.power_kw, 0);
+      const savedKwh = Math.min(currentAnalysis.total_monthly_kwh, hours * 30 * heavyPower);
+      const monthlySaving = savedKwh * currentAnalysis.tariff_pkr_per_kwh;
+      document.getElementById("sim-bill").textContent = money(currentAnalysis.monthly_bill_pkr - monthlySaving);
+      document.getElementById("sim-monthly-saving").textContent = money(monthlySaving);
+      document.getElementById("sim-annual-saving").textContent = money(monthlySaving * 12);
+    }
+    slider.addEventListener("input", updateSimulator);
+
+    function renderAnalysis(data) {
+      currentAnalysis = data;
+      document.getElementById("appliance-count").textContent = data.appliances.length;
+      document.getElementById("consumption").textContent = data.total_monthly_kwh.toLocaleString("en-PK");
+      document.getElementById("monthly-bill").textContent = money(data.monthly_bill_pkr);
+      document.getElementById("efficiency-score").textContent = data.efficiency_score;
+      const caption = data.efficiency_score >= 75 ? "Efficient" : data.efficiency_score >= 45 ? "Room to improve" : "Needs attention";
+      document.getElementById("efficiency-caption").textContent = caption;
+      gaugeChart.data.datasets[0].data = [data.efficiency_score, 100 - data.efficiency_score];
+      gaugeChart.data.datasets[0].backgroundColor[0] = data.efficiency_score >= 75 ? "#10b981" : data.efficiency_score >= 45 ? "#f59e0b" : "#f87171";
+      gaugeChart.update();
+      const colors = ["#10b981", "#06b6d4", "#34d399", "#22d3ee", "#a78bfa", "#fbbf24"];
+      applianceChart.data.labels = data.appliances.map(appliance => appliance.name);
+      applianceChart.data.datasets[0].data = data.appliances.map(appliance => appliance.monthly_kwh);
+      applianceChart.data.datasets[0].backgroundColor = data.appliances.map((_, index) => colors[index % colors.length]);
+      applianceChart.update();
+      renderDirectives(data.optimization_directives);
+      const source = document.getElementById("analysis-source");
+      if (data.source === "fallback") {
+        source.textContent = "Demo estimate";
+        source.className = "rounded-full border border-amber-400/20 bg-amber-400/[.05] px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-amber-300";
+        showAlert(data.notice || "Showing demo estimates. Live vision analysis is currently unavailable.");
+      } else {
+        source.textContent = "Gemini vision";
+        source.className = "rounded-full border border-emerald-400/20 bg-emerald-400/[.05] px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-emerald-300";
+        clearAlert();
+      }
+      updateSimulator();
+    }
+
+    analyzeButton.addEventListener("click", async () => {
+      if (!selectedFile) return;
+      clearAlert();
+      analyzeButton.disabled = true;
+      document.getElementById("button-label").innerHTML = '<span class="spin inline-block align-[-2px]">◌</span> Scanning…';
+      document.getElementById("scan-line").classList.remove("hidden");
+      document.getElementById("scan-overlay").classList.remove("hidden");
+      document.getElementById("scan-overlay").classList.add("flex");
+      try {
+        const formData = new FormData();
+        formData.append("image", selectedFile);
+        const response = await fetch("/analyze", { method: "POST", body: formData });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "The image could not be analyzed.");
+        renderAnalysis(data);
+      } catch (error) {
+        showAlert(error.message || "Could not reach the analysis service. Please try again.", true);
+      } finally {
+        analyzeButton.disabled = false;
+        document.getElementById("button-label").innerHTML = 'Analyze room <span aria-hidden="true">→</span>';
+        document.getElementById("scan-line").classList.add("hidden");
+        document.getElementById("scan-overlay").classList.add("hidden");
+        document.getElementById("scan-overlay").classList.remove("flex");
+      }
+    });
+  </script>
+</body>
+</html>
